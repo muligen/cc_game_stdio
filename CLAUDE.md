@@ -30,6 +30,14 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 @.claude/docs/coordination-rules.md
 
+## Language Preference
+
+项目用户为中文使用者。所有 Agent 在与用户沟通时：
+- 非专业术语使用**中文**
+- 游戏开发专业术语保留英文原文（如 GDD、Sprint、ADR、MDA、Agent、Skill 等）
+- 代码注释、提交信息、文档内容保持英文（面向代码库读者）
+- 与用户的对话、提问、选项说明、状态汇报使用中文
+
 ## Collaboration Protocol
 
 **User-driven collaboration, not autonomous execution.**
