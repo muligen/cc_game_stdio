@@ -5,6 +5,8 @@
 ```
                            [Human Developer]
                                  |
+                          project-driver
+                                 |
                  +---------------+---------------+
                  |               |               |
          creative-director  technical-director  producer
@@ -68,6 +70,7 @@ art-dir = art-director
 
 | From | Can Delegate To |
 |------|----------------|
+| **project-driver** | Any agent (via Task tool) and any skill (via Skill tool) — orchestrates workflow, never makes domain decisions |
 | creative-director | game-designer, art-director, audio-director, narrative-director |
 | technical-director | lead-programmer, devops-engineer, performance-analyst, technical-artist (technical decisions) |
 | producer | Any agent (task assignment within their domain only) |

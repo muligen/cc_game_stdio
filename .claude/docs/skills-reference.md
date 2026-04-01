@@ -3,6 +3,7 @@
 | Command | Purpose |
 |---------|---------|
 | `/start` | First-time onboarding — asks where you are, then guides you to the right workflow |
+| `/drive` | Continuous project autopilot: reads state, proposes next action, you approve, it delegates, loops |
 | `/design-review` | Review a game design document for completeness and consistency |
 | `/code-review` | Architectural code review for a file or changeset |
 | `/playtest-report` | Generate a structured playtest report template |

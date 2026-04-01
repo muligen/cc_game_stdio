@@ -212,6 +212,13 @@ If you have design docs, prototypes, or code already:
 3. **Validate phase readiness** — Run `/gate-check` to see where you stand
 4. **Plan the next sprint** — Run `/sprint-plan new`
 
+### Path E: "Just tell me what to do next"
+
+Run `/drive`. The project-driver analyzes your project state and proposes the
+single most important next action. You say **yes** or **no**. It delegates the
+work to the right agent or skill, records the result, and immediately proposes
+the next action. Continuous autopilot from concept to release.
+
 ## File Structure Reference
 
 ```

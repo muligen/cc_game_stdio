@@ -5,6 +5,11 @@ The following agents are available. Each has a dedicated definition file in
 spans multiple domains, the coordinating agent (usually `producer` or the
 domain lead) should delegate to specialists.
 
+## Tier 0 -- Meta-Agent (Sonnet)
+| Agent | Domain | When to Use |
+|-------|--------|-------------|
+| `project-driver` | Workflow orchestration | Run `/drive` for continuous autopilot — proposes next action, you approve, it delegates and loops |
+
 ## Tier 1 -- Leadership Agents (Opus)
 | Agent | Domain | When to Use |
 |-------|--------|-------------|
