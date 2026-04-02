@@ -140,6 +140,9 @@ export interface EnemyData {
   aiPattern?: 'random' | 'sequential' | 'patterned' | 'boss';
   /** Optional fixed move pattern for patterned AI. */
   movePattern?: string[];
+  /** Full move definitions indexed by moveId. Used by CombatController to resolve
+   *  the moveId returned by selectMove into an EnemyMove with full effect data. */
+  moveDefinitions?: Record<string, EnemyMove>;
 }
 
 /**

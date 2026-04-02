@@ -257,6 +257,56 @@ export class DeckManager {
   }
 
   // ---------------------------------------------------------------
+  // Opening Hand
+  // ---------------------------------------------------------------
+
+  /**
+   * Draw the opening hand for combat, guaranteeing all innate cards are included.
+   *
+   * Per GDD: innate cards are always in the opening hand of each combat.
+   * Implementation:
+   * 1. Find all innate cards currently in the draw pile.
+   * 2. Move them from draw pile to hand first (guaranteed placement).
+   * 3. Draw remaining cards (handSize - innateCount) via normal drawCard.
+   *
+   * Edge cases:
+   * - More innate cards than handSize: all innate cards go to hand,
+   *   potentially exceeding handSize. The innate guarantee overrides the limit.
+   * - No innate cards: equivalent to a normal drawCard(handSize).
+   * - Innate cards already in hand/discard/exhaust: only draw pile innate
+   *   cards are moved (cards in other piles are already placed or removed).
+   *
+   * @param handSize - Number of cards for the opening hand (default: 5).
+   * @returns Array of all cards drawn to hand (innate + normally drawn).
+   */
+  drawOpeningHand(handSize: number = 5): CombatCardInstance[] {
+    // Find innate cards in the draw pile only.
+    const innateInDraw = this.drawPile.filter((card) => CardHelper.isInnate(card));
+
+    // Move innate cards from draw pile to hand.
+    for (const card of innateInDraw) {
+      const index = this.drawPile.findIndex((c) => c.instanceId === card.instanceId);
+      if (index !== -1) {
+        this.drawPile.splice(index, 1);
+        this.hand.push(card);
+      }
+    }
+
+    const innateCount = innateInDraw.length;
+    const remaining = Math.max(0, handSize - innateCount);
+
+    LOG.debug(
+      `drawOpeningHand: Placed ${innateCount} innate cards. Drawing ${remaining} more.`
+    );
+
+    // Draw remaining cards normally (respects hand limit).
+    const drawn = this.drawCard(remaining);
+
+    // Return the full opening hand (innate + drawn).
+    return [...innateInDraw, ...drawn];
+  }
+
+  // ---------------------------------------------------------------
   // Query Methods (return snapshots)
   // ---------------------------------------------------------------
 

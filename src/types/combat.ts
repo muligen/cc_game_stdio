@@ -51,6 +51,10 @@ export interface CombatState {
   phase: TurnPhase;
   /** Current turn number (starts at 1). */
   turnNumber: number;
+  /** Player's current HP. */
+  playerHP: number;
+  /** Player's maximum HP. */
+  playerMaxHP: number;
   /** Player's current block. */
   playerBlock: number;
   /** Active enemy instances. */
