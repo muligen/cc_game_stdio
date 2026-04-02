@@ -17,7 +17,7 @@
 import type {
   CardInstance,
   CombatState,
-  EnemyInstance,
+  CombatEnemyInstance,
   RewardChoice,
   RunStatus,
 } from '../types';
@@ -59,7 +59,7 @@ export interface EffectResult {
  */
 export interface EventPayloadMap {
   // --- Combat Lifecycle ---
-  onCombatStart: { combatState: CombatState; enemies: EnemyInstance[] };
+  onCombatStart: { combatState: CombatState; enemies: CombatEnemyInstance[] };
   onCombatEnd: { result: 'victory' | 'defeat'; combatState: CombatState };
   onPlayerTurnStart: { turnNumber: number };
   onPlayerTurnEnd: { turnNumber: number };
@@ -102,7 +102,7 @@ export interface EventPayloadMap {
 
   // --- Death ---
   onEntityDeath: { entity: Entity; cause: 'damage' | 'status_effect' };
-  onEnemyDeath: { enemy: EnemyInstance; killer: Entity };
+  onEnemyDeath: { enemy: CombatEnemyInstance; killer: Entity };
 
   // --- Status Effects ---
   onStatusApplied: { target: Entity; status: string; stacks: number };

@@ -6,6 +6,8 @@
  * Per ADR-001 Decision 2: combat state is scoped to CombatScene.
  */
 
+import type { CombatEnemyInstance } from './enemy';
+
 /** Turn phase within combat. Per Combat GDD Section 1. */
 export enum TurnPhase {
   INITIALIZING = 'initializing',
@@ -33,39 +35,11 @@ export enum EnemyTurnSubState {
 export type CombatResult = 'victory' | 'defeat';
 
 /**
- * Enemy instance during combat.
- * Tracks runtime state for a single enemy in combat.
+ * Backward-compatible alias for CombatEnemyInstance.
+ * Consolidated from the old EnemyInstance type that duplicated fields.
+ * Use CombatEnemyInstance in new code.
  */
-export interface EnemyInstance {
-  /** Unique combat-scoped instance ID. */
-  instanceId: string;
-  /** References EnemyData.id. */
-  enemyId: string;
-  /** Current HP. */
-  currentHP: number;
-  /** Maximum HP. */
-  maxHP: number;
-  /** Current block amount. */
-  block: number;
-  /** Whether this enemy is alive. */
-  isAlive: boolean;
-  /** Current intent (selected move). */
-  currentMove: string | null;
-  /** Currently selected move index (for rotating AI). */
-  moveIndex: number;
-  /** Consecutive count for current move. */
-  consecutiveCount: number;
-  /** Active status effects on this enemy. */
-  statusEffects: Array<{
-    effectId: string;
-    stacks: number;
-    source: string;
-  }>;
-  /** Current boss phase (null for non-bosses). */
-  currentPhase: number | null;
-  /** Whether the enemy is stunned. */
-  isStunned: boolean;
-}
+export type EnemyInstance = CombatEnemyInstance;
 
 /**
  * CombatState — mutable combat-scoped state.
@@ -80,7 +54,7 @@ export interface CombatState {
   /** Player's current block. */
   playerBlock: number;
   /** Active enemy instances. */
-  enemies: EnemyInstance[];
+  enemies: CombatEnemyInstance[];
   /** Card IDs in the draw pile. */
   drawPile: string[];
   /** Card instance IDs in hand. */

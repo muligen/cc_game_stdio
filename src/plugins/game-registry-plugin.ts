@@ -34,6 +34,47 @@ import { Logger } from '../utils/logger';
 
 const LOG = new Logger('GameRegistryPlugin');
 
+// ---------------------------------------------------------------------------
+// Runtime validation (M2 fix)
+// ---------------------------------------------------------------------------
+
+/**
+ * Required field definitions per entity type.
+ * Each key is a data type name, value is the list of fields that MUST exist
+ * on every entry. Missing any field causes the entry to be skipped with a warning.
+ */
+const REQUIRED_FIELDS: Record<string, string[]> = {
+  cards: ['id', 'name', 'type', 'cost', 'rarity'],
+  enemies: ['id', 'name', 'type', 'hp', 'moves'],
+  relics: ['id', 'name', 'description'],
+  potions: ['id', 'name', 'description'],
+  statusEffects: ['id', 'name', 'description', 'category', 'durationType', 'stackingMode'],
+  characters: ['id', 'name'],
+  events: ['id', 'name'],
+  ascension: ['id'],
+};
+
+/**
+ * Validate a single data entry against required fields for the given type.
+ * Returns the list of missing field names, or an empty array if valid.
+ */
+function validateEntry(typeName: string, entry: Record<string, unknown>): string[] {
+  const required = REQUIRED_FIELDS[typeName] ?? [];
+  const missing: string[] = [];
+  for (const field of required) {
+    if (!(field in entry) || entry[field] === undefined || entry[field] === null) {
+      missing.push(field);
+    }
+  }
+  // Special case: enemies can have hpMin/hpMax instead of hp
+  if (typeName === 'enemies' && missing.includes('hp')) {
+    if ('hpMin' in entry && 'hpMax' in entry) {
+      missing.splice(missing.indexOf('hp'), 1);
+    }
+  }
+  return missing;
+}
+
 /** Registry state machine. Per design/gdd/data-config.md States and Transitions. */
 export enum RegistryState {
   UNLOADED = 'UNLOADED',
@@ -308,17 +349,20 @@ export class GameRegistryPlugin extends Phaser.Plugins.BasePlugin {
       return;
     }
     const items: CardData[] = Array.isArray(raw) ? raw : [];
+    let valid = 0;
     for (const item of items) {
-      if (!item.id) {
-        LOG.warn('Card missing required field: id. Skipping.');
+      const missing = validateEntry('cards', item as unknown as Record<string, unknown>);
+      if (missing.length > 0) {
+        LOG.warn(`Card missing required field: ${missing.join(', ')}. Skipping entry: ${JSON.stringify(item).slice(0, 80)}.`);
         continue;
       }
       if (this.cards.has(item.id)) {
         LOG.warn(`Duplicate card ID: ${item.id}. Overwriting previous entry.`);
       }
       this.cards.set(item.id, item as CardData);
+      valid++;
     }
-    LOG.info(`Loaded ${this.cards.size} cards.`);
+    LOG.info(`Loaded ${this.cards.size} cards (${valid}/${items.length} valid).`);
   }
 
   private loadEnemyData(scene: Phaser.Scene): void {
@@ -328,17 +372,20 @@ export class GameRegistryPlugin extends Phaser.Plugins.BasePlugin {
       return;
     }
     const items: EnemyData[] = Array.isArray(raw) ? raw : [];
+    let valid = 0;
     for (const item of items) {
-      if (!item.id) {
-        LOG.warn('Enemy missing required field: id. Skipping.');
+      const missing = validateEntry('enemies', item as unknown as Record<string, unknown>);
+      if (missing.length > 0) {
+        LOG.warn(`Enemy missing required field: ${missing.join(', ')}. Skipping entry: ${JSON.stringify(item).slice(0, 80)}.`);
         continue;
       }
       if (this.enemies.has(item.id)) {
         LOG.warn(`Duplicate enemy ID: ${item.id}. Overwriting previous entry.`);
       }
       this.enemies.set(item.id, item as EnemyData);
+      valid++;
     }
-    LOG.info(`Loaded ${this.enemies.size} enemies.`);
+    LOG.info(`Loaded ${this.enemies.size} enemies (${valid}/${items.length} valid).`);
   }
 
   private loadStatusEffectData(scene: Phaser.Scene): void {
@@ -348,17 +395,20 @@ export class GameRegistryPlugin extends Phaser.Plugins.BasePlugin {
       return;
     }
     const items: StatusEffectData[] = Array.isArray(raw) ? raw : [];
+    let valid = 0;
     for (const item of items) {
-      if (!item.id) {
-        LOG.warn('Status effect missing required field: id. Skipping.');
+      const missing = validateEntry('statusEffects', item as unknown as Record<string, unknown>);
+      if (missing.length > 0) {
+        LOG.warn(`Status effect missing required field: ${missing.join(', ')}. Skipping entry: ${JSON.stringify(item).slice(0, 80)}.`);
         continue;
       }
       if (this.statusEffects.has(item.id)) {
         LOG.warn(`Duplicate status effect ID: ${item.id}. Overwriting previous entry.`);
       }
       this.statusEffects.set(item.id, item as StatusEffectData);
+      valid++;
     }
-    LOG.info(`Loaded ${this.statusEffects.size} status effects.`);
+    LOG.info(`Loaded ${this.statusEffects.size} status effects (${valid}/${items.length} valid).`);
   }
 
   private loadRelicData(scene: Phaser.Scene): void {
@@ -368,17 +418,20 @@ export class GameRegistryPlugin extends Phaser.Plugins.BasePlugin {
       return;
     }
     const items: RelicData[] = Array.isArray(raw) ? raw : [];
+    let valid = 0;
     for (const item of items) {
-      if (!item.id) {
-        LOG.warn('Relic missing required field: id. Skipping.');
+      const missing = validateEntry('relics', item as unknown as Record<string, unknown>);
+      if (missing.length > 0) {
+        LOG.warn(`Relic missing required field: ${missing.join(', ')}. Skipping entry: ${JSON.stringify(item).slice(0, 80)}.`);
         continue;
       }
       if (this.relics.has(item.id)) {
         LOG.warn(`Duplicate relic ID: ${item.id}. Overwriting previous entry.`);
       }
       this.relics.set(item.id, item as RelicData);
+      valid++;
     }
-    LOG.info(`Loaded ${this.relics.size} relics.`);
+    LOG.info(`Loaded ${this.relics.size} relics (${valid}/${items.length} valid).`);
   }
 
   private loadPotionData(scene: Phaser.Scene): void {
@@ -388,17 +441,20 @@ export class GameRegistryPlugin extends Phaser.Plugins.BasePlugin {
       return;
     }
     const items: PotionData[] = Array.isArray(raw) ? raw : [];
+    let valid = 0;
     for (const item of items) {
-      if (!item.id) {
-        LOG.warn('Potion missing required field: id. Skipping.');
+      const missing = validateEntry('potions', item as unknown as Record<string, unknown>);
+      if (missing.length > 0) {
+        LOG.warn(`Potion missing required field: ${missing.join(', ')}. Skipping entry: ${JSON.stringify(item).slice(0, 80)}.`);
         continue;
       }
       if (this.potions.has(item.id)) {
         LOG.warn(`Duplicate potion ID: ${item.id}. Overwriting previous entry.`);
       }
       this.potions.set(item.id, item as PotionData);
+      valid++;
     }
-    LOG.info(`Loaded ${this.potions.size} potions.`);
+    LOG.info(`Loaded ${this.potions.size} potions (${valid}/${items.length} valid).`);
   }
 
   private loadCharacterData(scene: Phaser.Scene): void {
