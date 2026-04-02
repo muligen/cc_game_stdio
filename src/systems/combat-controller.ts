@@ -659,7 +659,16 @@ export class CombatController {
    * @param hp - New HP value.
    */
   setPlayerHP(hp: number): void {
+    const oldHP = this.state.playerHP;
     this.state.playerHP = hp;
+    if (oldHP !== hp) {
+      this._eventBus.emit('onHPChanged', {
+        target: { id: PLAYER_TARGET_ID, type: 'player' as const },
+        oldHP,
+        newHP: hp,
+        maxHP: this.state.playerMaxHP,
+      });
+    }
   }
 
   /**
@@ -822,8 +831,16 @@ export class CombatController {
    * the source of truth for energy calculations.
    */
   private syncEnergyState(): void {
+    const oldEnergy = this.state.currentEnergy;
     this.state.currentEnergy = this._energySystem.getCurrentEnergy();
     this.state.effectiveMaxEnergy = this._energySystem.getEffectiveMaxEnergy();
+    if (oldEnergy !== this.state.currentEnergy) {
+      this._eventBus.emit('onEnergyChanged', {
+        oldEnergy,
+        newEnergy: this.state.currentEnergy,
+        effectiveMaxEnergy: this.state.effectiveMaxEnergy,
+      });
+    }
   }
 
   /**
@@ -1026,14 +1043,25 @@ export class CombatController {
       // Apply hits
       for (let h = 0; h < hits; h++) {
         if (!enemy.isAlive) break;
+        const prevHP = enemy.currentHP;
         const result = this._enemyHelper.takeDamage(enemy, hitDamage);
 
         this._eventBus.emit('onDamageDealt', {
           source: { id: PLAYER_TARGET_ID, type: 'player' as const },
           target: { id: enemy.instanceId, type: 'enemy' as const },
+          rawDamage: hitDamage,
           damage: result.hpLost,
           blocked: result.blocked,
         });
+
+        if (result.hpLost > 0) {
+          this._eventBus.emit('onHPChanged', {
+            target: { id: enemy.instanceId, type: 'enemy' as const },
+            oldHP: prevHP,
+            newHP: enemy.currentHP,
+            maxHP: enemy.maxHP,
+          });
+        }
 
         if (!enemy.isAlive) {
           this._eventBus.emit('onEnemyDeath', {
@@ -1147,6 +1175,8 @@ export class CombatController {
     // from a previous selectAndResolve call), keep it. This allows tests and
     // external systems to pre-set intents without them being overwritten.
     if (enemy.currentMove) {
+      // Still emit intent display data for UI consumption even when move is pre-set.
+      this.emitIntentDisplay(enemy);
       return;
     }
 
@@ -1157,6 +1187,97 @@ export class CombatController {
     } else {
       enemy.currentMove = null;
     }
+
+    // Compute and emit intent display data for UI consumption.
+    // Per enemy-ai GDD: snapshot at selection time, does NOT update if modifiers change.
+    this.emitIntentDisplay(enemy);
+  }
+
+  /**
+   * Compute and emit intent display data for UI consumption.
+   *
+   * Per enemy-ai GDD Section "Intent Display Damage":
+   *   displayDamage = floor((base + strength) * vulnerableMultiplier * weakMultiplier)
+   *
+   * Snapshot is taken at selection time — does NOT update if modifiers change
+   * during the player's turn. Intent data includes: icon type, damage value,
+   * block value, effect name.
+   *
+   * @param enemy - The enemy whose intent to display.
+   */
+  private emitIntentDisplay(enemy: CombatEnemyInstance): void {
+    const move = enemy.currentMove;
+    if (!move) {
+      this._eventBus.emit('onIntentSelected', {
+        enemyId: enemy.instanceId,
+        intentType: null,
+        displayDamage: 0,
+        blockAmount: 0,
+        effectName: null,
+      });
+      return;
+    }
+
+    // Determine intent type from the move
+    const intentType = move.intent ?? null;
+
+    // Calculate display damage per enemy-ai GDD formula:
+    // floor((base + strength) * vulnerableMultiplier * weakMultiplier)
+    let displayDamage = 0;
+    let blockAmount = 0;
+    let effectName: string | null = null;
+
+    for (const effect of move.effects) {
+      if (effect.type === 'deal_damage') {
+        const base = effect.value;
+        const strength = this._statusEffectManager.getEffectStacks(enemy.instanceId, 'strength');
+        const playerVulnerable = this._statusEffectManager.getEffectStacks(PLAYER_TARGET_ID, 'vulnerable');
+        const enemyWeak = this._statusEffectManager.getEffectStacks(enemy.instanceId, 'weak');
+
+        let dmg: number = base + strength;
+        if (playerVulnerable > 0) {
+          dmg = Math.floor(dmg * 1.5);
+        }
+        if (enemyWeak > 0) {
+          dmg = Math.floor(dmg * 0.75);
+        }
+        dmg = Math.max(0, dmg);
+        // MoveEffect doesn't have hits field — use single hit for enemy moves
+        displayDamage += dmg;
+      } else if (effect.type === 'gain_block') {
+        blockAmount += effect.value;
+      } else if (effect.type === 'apply_status' && effect.status) {
+        effectName = effect.status;
+      }
+    }
+
+    // Use move-level damage/block fields as a base when available.
+    // Per enemy-ai GDD: the move-level `damage` field is the authoritative base damage
+    // for the intent. If no deal_damage effects were found, use it directly (without
+    // per-effect modifiers since we don't know the breakdown). If deal_damage effects
+    // were found, the per-effect calculation above is authoritative.
+    if (move.damage && displayDamage === 0) {
+      // Apply modifiers to the move-level damage
+      const strength = this._statusEffectManager.getEffectStacks(enemy.instanceId, 'strength');
+      const playerVulnerable = this._statusEffectManager.getEffectStacks(PLAYER_TARGET_ID, 'vulnerable');
+      const enemyWeak = this._statusEffectManager.getEffectStacks(enemy.instanceId, 'weak');
+
+      let dmg = move.damage + strength;
+      if (playerVulnerable > 0) dmg = Math.floor(dmg * 1.5);
+      if (enemyWeak > 0) dmg = Math.floor(dmg * 0.75);
+      displayDamage = Math.max(0, dmg);
+    }
+    if (move.block && blockAmount === 0) {
+      blockAmount = move.block;
+    }
+
+    this._eventBus.emit('onIntentSelected', {
+      enemyId: enemy.instanceId,
+      intentType,
+      displayDamage,
+      blockAmount,
+      effectName,
+    });
   }
 
   /**
@@ -1305,6 +1426,7 @@ export class CombatController {
     const hpLost = damage - blocked;
 
     // Step 8: Apply HP loss
+    const oldPlayerHP = this.state.playerHP;
     if (hpLost > 0) {
       this.state.playerHP = Math.max(0, this.state.playerHP - hpLost);
     }
@@ -1313,9 +1435,20 @@ export class CombatController {
     this._eventBus.emit('onDamageDealt', {
       source: { id: enemy.instanceId, type: 'enemy' },
       target: { id: PLAYER_TARGET_ID, type: 'player' },
+      rawDamage: damage,
       damage: hpLost,
       blocked,
     });
+
+    // Emit HP change event
+    if (hpLost > 0) {
+      this._eventBus.emit('onHPChanged', {
+        target: { id: PLAYER_TARGET_ID, type: 'player' as const },
+        oldHP: oldPlayerHP,
+        newHP: this.state.playerHP,
+        maxHP: this.state.playerMaxHP,
+      });
+    }
 
     // Step 9: Death check
     if (this.state.playerHP <= 0) {
