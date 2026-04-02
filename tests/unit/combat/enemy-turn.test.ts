@@ -74,6 +74,7 @@ function createMocks() {
       applyEffect: () => true,
       tryApplyDebuff: () => true,
       getEffectData: () => undefined as { category: string } | undefined,
+      resetForCombat: () => {},
       /** Test helper: set effect stacks for a target. */
       _setStacks(targetId: string, effectId: string, stacks: number) {
         effectStacksMap.set(`${targetId}:${effectId}`, stacks);

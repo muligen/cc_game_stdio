@@ -106,6 +106,8 @@ export interface ICombatStatusEffectManager {
   tryApplyDebuff(targetId: string, effectId: string, stacks: number, source: string): boolean;
   /** Get status effect definition data. Returns undefined if unknown. */
   getEffectData(effectId: string): { category: string } | undefined;
+  /** Clear all status effects for combat cleanup. */
+  resetForCombat(): void;
 }
 
 /**
@@ -607,6 +609,35 @@ export class CombatController {
     }
     this.state.phase = TurnPhase.COMBAT_OVER;
     this.state.result = result;
+
+    // Emit onCombatEnd with full payload for scene/UI consumption
+    this._eventBus.emit('onCombatEnd', {
+      result,
+      turnNumber: this.state.turnNumber,
+      playerHP: this.state.playerHP,
+      playerMaxHP: this.state.playerMaxHP,
+      enemiesRemaining: this.state.enemies.filter((e) => e.isAlive).length,
+      cardsPlayedThisTurn: this.state.cardsPlayedThisTurn,
+    });
+
+    // Emit specific victory/defeat signal for scene transition
+    if (result === 'victory') {
+      this._eventBus.emit('onCombatVictory', {
+        turnNumber: this.state.turnNumber,
+        playerHP: this.state.playerHP,
+      });
+    } else {
+      this._eventBus.emit('onCombatDefeat', {
+        turnNumber: this.state.turnNumber,
+      });
+    }
+
+    // Clear all combat status effects
+    this._statusEffectManager.resetForCombat();
+
+    // Reset energy to zero
+    this._energySystem.onTurnEnd();
+    this.syncEnergyState();
   }
 
   // ---------------------------------------------------------------------------

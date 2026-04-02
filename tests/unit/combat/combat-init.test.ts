@@ -196,6 +196,7 @@ function createMockedController() {
     statusEffectManager: {
       getEffectStacks: () => 0,
       processTurnEnd: () => {},
+      resetForCombat: () => {},
     },
     effectResolver: {
       resolveEffect: () => [],
@@ -555,8 +556,9 @@ describe('CombatController.initCombat — integration with real DeckManager', ()
         getCurrentEnergy: () => 3,
         getEffectiveMaxEnergy: () => 3,
         onTurnStart: () => {},
+        onTurnEnd: () => {},
       },
-      { getEffectStacks: () => 0 },
+      { getEffectStacks: () => 0, resetForCombat: () => {} },
       { resolveEffect: () => [] },
       {
         createInstance: (data, id) => makeEnemyInstance({ data, instanceId: id }),
@@ -593,8 +595,9 @@ describe('CombatController.initCombat — integration with real DeckManager', ()
         getCurrentEnergy: () => 3,
         getEffectiveMaxEnergy: () => 3,
         onTurnStart: () => {},
+        onTurnEnd: () => {},
       },
-      { getEffectStacks: () => 0 },
+      { getEffectStacks: () => 0, resetForCombat: () => {} },
       { resolveEffect: () => [] },
       {
         createInstance: (data, id) => makeEnemyInstance({ data, instanceId: id }),

@@ -1,7 +1,8 @@
 /**
  * combat-controller.test.ts — Unit tests for CombatController.
  *
- * Implements acceptance criteria from design/gdd/combat.md (Combat States, Turn Flow).
+ * Implements acceptance criteria from design/gdd/combat.md (Combat States, Turn Flow)
+ * and design/gdd/card.md (Card Play Flow, Card Keywords).
  *
  * Coverage areas:
  * - startCombat initializes state correctly
@@ -9,6 +10,12 @@
  * - All valid phase transitions
  * - All invalid phase transitions throw
  * - State mutations: setPlayerBlock, setPlayerHP, incrementCardsPlayed
+ * - playCard: validation, energy payment, damage/block/status resolution, exhaust, victory
+ * - endCombat: event emissions (onCombatEnd, onCombatVictory, onCombatDefeat), cleanup
+ * - executeEnemyTurn: stunned enemies, damage modifiers, death checks
+ * - Card damage modifiers: strength, vulnerable, weak, intangible
+ * - Card block modifiers: dexterity, frail
+ * - Card status routing: buff vs debuff, artifact negation
  */
 
 // @vitest-environment node
@@ -16,16 +23,38 @@
 import { describe, it, expect } from 'vitest';
 import { CombatController } from '../../../src/systems/combat-controller';
 import { TurnPhase } from '../../../src/types/combat';
+import {
+  CardType,
+  CostType,
+  Keyword,
+  Rarity,
+  TargetType,
+  type CardData,
+  type CombatCardInstance,
+  type CardEffect,
+} from '../../../src/types/card';
+import type { CombatEnemyInstance, EnemyData, EnemyMove } from '../../../src/types/enemy';
 
 // ---------------------------------------------------------------------------
 // Mock Dependencies
 // ---------------------------------------------------------------------------
 
 /**
+ * Options for createMocks to customize specific mock behaviors.
+ */
+interface MockOptions {
+  /** Override status effect stacks for specific (targetId, effectId) pairs. */
+  effectStacks?: Record<string, number>;
+  /** Override effect data category for specific effectId. */
+  effectData?: Record<string, { category: string }>;
+}
+
+/**
  * Create a fresh set of mock dependencies for CombatController.
  * Each call returns new objects so tests are fully isolated.
  */
-function createMocks() {
+function createMocks(options: MockOptions = {}) {
+  const { effectStacks = {}, effectData = {} } = options;
   return {
     eventBus: {
       emit: () => {},
@@ -38,16 +67,28 @@ function createMocks() {
       drawOpeningHand: () => [],
       drawCard: () => [],
       discardHand: () => {},
+      getHand: () => [] as CombatCardInstance[],
+      discardCards: () => {},
+      exhaustCards: () => {},
     },
     energySystem: {
       getCurrentEnergy: () => 3,
       getEffectiveMaxEnergy: () => 3,
       onTurnStart: () => {},
       onTurnEnd: () => {},
+      canPlay: () => true,
+      spendEnergy: () => 0,
     },
     statusEffectManager: {
-      getEffectStacks: () => 0,
+      getEffectStacks: (targetId: string, effectId: string) => {
+        const key = `${targetId}:${effectId}`;
+        return effectStacks[key] ?? 0;
+      },
       processTurnEnd: () => {},
+      resetForCombat: () => {},
+      applyEffect: () => true,
+      tryApplyDebuff: () => true,
+      getEffectData: (effectId: string) => effectData[effectId] ?? undefined,
     },
     effectResolver: {
       resolveEffect: () => [],

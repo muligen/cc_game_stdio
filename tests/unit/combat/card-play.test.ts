@@ -190,6 +190,7 @@ function createTestController(options: {
     applyEffect: () => true,
     tryApplyDebuff: () => true,
     getEffectData: () => undefined,
+    resetForCombat: () => {},
   };
 
   const effectResolver: ICombatEffectResolver = {
