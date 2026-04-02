@@ -90,6 +90,24 @@ export interface MoveCondition {
 }
 
 /**
+ * ConditionalMove — override move selection based on game state.
+ * Per enemy-ai GDD "Conditional Move Override" section.
+ *
+ * Conditions are evaluated in order; first match wins.
+ * If no condition matches, falls back to weighted pool.
+ */
+export interface ConditionalMove {
+  /** Condition trigger type. */
+  trigger: 'turn_count';
+  /** Comparison operator for numeric conditions. */
+  operator: '==' | '<=' | '>=';
+  /** Value to compare against. */
+  value: number;
+  /** The moveId to use when this condition matches. */
+  moveId: string;
+}
+
+/**
  * Boss phase transition definition.
  * Per Enemy AI GDD Section 3 (Boss Phase System).
  */
@@ -143,6 +161,8 @@ export interface EnemyData {
   /** Full move definitions indexed by moveId. Used by CombatController to resolve
    *  the moveId returned by selectMove into an EnemyMove with full effect data. */
   moveDefinitions?: Record<string, EnemyMove>;
+  /** Conditional move overrides. Evaluated before weighted pool. First match wins. */
+  conditionalMoves?: ConditionalMove[];
 }
 
 /**

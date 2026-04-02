@@ -325,30 +325,35 @@ export class CombatController {
         enemyInstances.push(instance);
       }
 
-      // 4. Select initial moves for all enemies and resolve to EnemyMove
-      for (const enemy of enemyInstances) {
-        this.selectAndResolveEnemyMove(enemy, aiRNG);
-      }
-
       this.state.enemies = enemyInstances;
     }
 
-    // 5. Draw opening hand with innate guarantee
+    // 4. Transition to first player turn (sets turnNumber = 1)
+    //    Must happen before enemy move selection so conditional moves
+    //    can evaluate turn_count correctly.
+    this.transitionToPlayerTurn();
+
+    // 5. Select initial moves for all enemies (after turnNumber is set)
+    if (enemyInstances.length > 0) {
+      const aiRNG = this._rng.getStream('aiRNG');
+      for (const enemy of enemyInstances) {
+        this.selectAndResolveEnemyMove(enemy, aiRNG);
+      }
+    }
+
+    // 6. Draw opening hand with innate guarantee
     this._deckManager.drawOpeningHand(openingHandSize);
 
     // Sync energy to combat state
     this.syncEnergyState();
 
-    // 6. Emit initialization event
+    // 7. Emit initialization event
     this._eventBus.emit('onCombatInit', {
       playerHP,
       playerMaxHP,
       baseEnergy,
       enemyCount: enemyInstances.length,
     });
-
-    // 7. Transition to first player turn
-    this.transitionToPlayerTurn();
   }
 
   // ---------------------------------------------------------------------------
@@ -522,6 +527,9 @@ export class CombatController {
 
       // 3. Execute intent effects
       this.executeEnemyIntent(enemy);
+
+      // 3b. Clear currentMove after execution so next turn can select a new one
+      enemy.currentMove = null;
 
       // Check if player died during this enemy's actions
       if (this.state.playerHP <= 0) {
@@ -1180,6 +1188,14 @@ export class CombatController {
       return;
     }
 
+    // Check conditional moves first (per enemy-ai GDD "Conditional Move Override").
+    // Conditions evaluated in order; first match wins.
+    const conditionalMove = this.evaluateConditionalMove(enemy);
+    if (conditionalMove) {
+      this.emitIntentDisplay(enemy);
+      return;
+    }
+
     const moveId = this._enemyHelper.selectMove(enemy, aiRNG);
     const moveDefinitions = enemy.data.moveDefinitions;
     if (moveDefinitions && moveId in moveDefinitions) {
@@ -1205,6 +1221,58 @@ export class CombatController {
    *
    * @param enemy - The enemy whose intent to display.
    */
+  /**
+   * Evaluate conditional move overrides for an enemy.
+   *
+   * Per enemy-ai GDD "Conditional Move Override":
+   * - Conditions evaluated in order; first match wins.
+   * - If matched, resolves the moveId to an EnemyMove from moveDefinitions
+   *   and sets enemy.currentMove directly (bypassing normal selectMove).
+   * - Returns true if a conditional move was applied, false otherwise.
+   *
+   * Currently supports: turn_count trigger only.
+   *
+   * @param enemy - The enemy instance to evaluate conditions for.
+   * @returns true if a conditional move was applied.
+   */
+  private evaluateConditionalMove(enemy: CombatEnemyInstance): boolean {
+    const conditions = enemy.data.conditionalMoves;
+    if (!conditions || conditions.length === 0) {
+      return false;
+    }
+
+    const turnNumber = this.state.turnNumber;
+
+    for (const cond of conditions) {
+      if (cond.trigger !== 'turn_count') continue;
+
+      let matched = false;
+      switch (cond.operator) {
+        case '==':
+          matched = turnNumber === cond.value;
+          break;
+        case '<=':
+          matched = turnNumber <= cond.value;
+          break;
+        case '>=':
+          matched = turnNumber >= cond.value;
+          break;
+      }
+
+      if (matched) {
+        const moveDefinitions = enemy.data.moveDefinitions;
+        if (moveDefinitions && cond.moveId in moveDefinitions) {
+          enemy.currentMove = moveDefinitions[cond.moveId];
+        } else {
+          enemy.currentMove = null;
+        }
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   private emitIntentDisplay(enemy: CombatEnemyInstance): void {
     const move = enemy.currentMove;
     if (!move) {
