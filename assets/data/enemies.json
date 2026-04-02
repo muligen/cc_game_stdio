@@ -1,0 +1,136 @@
+[
+  {
+    "id": "cultist",
+    "name": "Cultist",
+    "type": "normal",
+    "hp": 50,
+    "act": 1,
+    "selectionMode": "rotating",
+    "moves": [
+      {
+        "moveId": "incantation",
+        "weight": 1,
+        "maxConsecutive": 1
+      },
+      {
+        "moveId": "dark_strike",
+        "weight": 1
+      }
+    ],
+    "phases": null
+  },
+  {
+    "id": "jaw_worm",
+    "name": "Jaw Worm",
+    "type": "normal",
+    "hp": 44,
+    "act": 1,
+    "selectionMode": "weighted",
+    "moves": [
+      {
+        "moveId": "chomp",
+        "weight": 25
+      },
+      {
+        "moveId": "thrash",
+        "weight": 30
+      },
+      {
+        "moveId": "bellow",
+        "weight": 45
+      }
+    ]
+  },
+  {
+    "id": "slaver_blue",
+    "name": "Blue Slaver",
+    "type": "normal",
+    "hp": 46,
+    "act": 1,
+    "selectionMode": "weighted",
+    "moves": [
+      {
+        "moveId": "stab",
+        "weight": 40
+      },
+      {
+        "moveId": "razor_slash",
+        "weight": 30
+      },
+      {
+        "moveId": "entangle",
+        "weight": 30,
+        "maxConsecutive": 1
+      }
+    ]
+  },
+  {
+    "id": "gremlin_nob",
+    "name": "Gremlin Nob",
+    "type": "elite",
+    "hp": 82,
+    "act": 1,
+    "selectionMode": "rotating",
+    "moves": [
+      {
+        "moveId": "bellow",
+        "weight": 1,
+        "maxConsecutive": 1
+      },
+      {
+        "moveId": "rage",
+        "weight": 1
+      },
+      {
+        "moveId": "skull_bash",
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "lagavulin",
+    "name": "Lagavulin",
+    "type": "elite",
+    "hp": 109,
+    "act": 1,
+    "selectionMode": "rotating",
+    "moves": [
+      {
+        "moveId": "sleep",
+        "weight": 1,
+        "maxConsecutive": 3
+      },
+      {
+        "moveId": "attack",
+        "weight": 1
+      },
+      {
+        "moveId": "siphon_soul",
+        "weight": 1
+      }
+    ]
+  },
+  {
+    "id": "slime_boss",
+    "name": "Slime Boss",
+    "type": "boss",
+    "hp": 140,
+    "act": 1,
+    "selectionMode": "rotating",
+    "moves": [
+      {
+        "moveId": "goop_spray",
+        "weight": 1
+      },
+      {
+        "moveId": "preparing",
+        "weight": 1
+      },
+      {
+        "moveId": "slam",
+        "weight": 1
+      }
+    ],
+    "phases": null
+  }
+]

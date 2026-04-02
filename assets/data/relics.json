@@ -1,0 +1,88 @@
+[
+  {
+    "id": "burning_blood",
+    "name": "Burning Blood",
+    "description": "At the end of combat, heal 6 HP.",
+    "flavorText": "A searing crimson ichor courses through your veins.",
+    "tier": "starter",
+    "triggers": [
+      {
+        "event": "on_combat_end",
+        "effects": [{ "type": "heal", "value": 6 }],
+        "priority": 0
+      }
+    ],
+    "stackable": false
+  },
+  {
+    "id": "ring_of_the_snake",
+    "name": "Ring of the Snake",
+    "description": "At the start of each combat, draw 2 additional cards.",
+    "tier": "starter",
+    "triggers": [
+      {
+        "event": "on_combat_start",
+        "effects": [{ "type": "draw_cards", "value": 2 }],
+        "priority": 0
+      }
+    ],
+    "stackable": false
+  },
+  {
+    "id": "akabeko",
+    "name": "Akabeko",
+    "description": "Your first attack each combat deals 8 additional damage.",
+    "tier": "common",
+    "triggers": [
+      {
+        "event": "on_card_played",
+        "condition": { "type": "first_attack_this_combat" },
+        "effects": [{ "type": "bonus_damage", "value": 8 }],
+        "priority": -10
+      }
+    ],
+    "stackable": false
+  },
+  {
+    "id": "anchor",
+    "name": "Anchor",
+    "description": "Start each combat with 10 Block.",
+    "tier": "common",
+    "triggers": [
+      {
+        "event": "on_combat_start",
+        "effects": [{ "type": "gain_block", "value": 10 }],
+        "priority": 0
+      }
+    ],
+    "stackable": false
+  },
+  {
+    "id": "bag_of_marbles",
+    "name": "Bag of Marbles",
+    "description": "At the start of each combat, apply 1 Vulnerable to ALL enemies.",
+    "tier": "common",
+    "triggers": [
+      {
+        "event": "on_combat_start",
+        "effects": [{ "type": "apply_status", "value": 1, "status": "vulnerable" }],
+        "priority": 0
+      }
+    ],
+    "stackable": false
+  },
+  {
+    "id": "vajra",
+    "name": "Vajra",
+    "description": "At the start of each combat, gain 1 Strength.",
+    "tier": "uncommon",
+    "triggers": [
+      {
+        "event": "on_combat_start",
+        "effects": [{ "type": "apply_status", "value": 1, "status": "strength" }],
+        "priority": 0
+      }
+    ],
+    "stackable": false
+  }
+]

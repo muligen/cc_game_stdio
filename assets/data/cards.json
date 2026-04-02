@@ -1,0 +1,299 @@
+[
+  {
+    "id": "strike_red",
+    "name": "Strike",
+    "type": "attack",
+    "rarity": "starter",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 6, "upgradedValue": 9 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "deal_damage", "value": 9 }] },
+    "description": "Deal {damage} damage."
+  },
+  {
+    "id": "defend_red",
+    "name": "Defend",
+    "type": "skill",
+    "rarity": "starter",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "gain_block", "value": 5, "upgradedValue": 8 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "gain_block", "value": 8 }] },
+    "description": "Gain {block} Block."
+  },
+  {
+    "id": "bash",
+    "name": "Bash",
+    "type": "attack",
+    "rarity": "starter",
+    "cost": 2,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 8, "upgradedValue": 10 },
+      { "type": "apply_status", "value": 2, "upgradedValue": 3, "status": "vulnerable", "duration": 2, "upgradedDuration": 3 }
+    ],
+    "keywords": [],
+    "upgrade": {
+      "effects": [
+        { "type": "deal_damage", "value": 10 },
+        { "type": "apply_status", "value": 3, "status": "vulnerable", "duration": 3 }
+      ]
+    },
+    "description": "Deal {damage} damage. Apply {amount} Vulnerable."
+  },
+  {
+    "id": "anger",
+    "name": "Anger",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 0,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 6, "upgradedValue": 8 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "deal_damage", "value": 8 }] },
+    "description": "Deal {damage} damage. Add a copy of this card to your discard pile."
+  },
+  {
+    "id": "body_slam",
+    "name": "Body Slam",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage_equal_to_block" }
+    ],
+    "keywords": [],
+    "upgrade": { "cost": 0 },
+    "description": "Deal damage equal to your Block."
+  },
+  {
+    "id": "clash",
+    "name": "Clash",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 0,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 14, "upgradedValue": 18 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "deal_damage", "value": 18 }] },
+    "description": "Can only be played if every card in your hand is an Attack. Deal {damage} damage."
+  },
+  {
+    "id": "cleave",
+    "name": "Cleave",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "all_enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 8, "upgradedValue": 11 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "deal_damage", "value": 11 }] },
+    "description": "Deal {damage} damage to ALL enemies."
+  },
+  {
+    "id": "iron_wave",
+    "name": "Iron Wave",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 5, "upgradedValue": 7 },
+      { "type": "gain_block", "value": 5, "upgradedValue": 7 }
+    ],
+    "keywords": [],
+    "upgrade": {
+      "effects": [
+        { "type": "deal_damage", "value": 7 },
+        { "type": "gain_block", "value": 7 }
+      ]
+    },
+    "description": "Deal {damage} damage. Gain {block} Block."
+  },
+  {
+    "id": "pommel_strike",
+    "name": "Pommel Strike",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 9, "upgradedValue": 10 },
+      { "type": "draw_cards", "value": 1, "upgradedValue": 2 }
+    ],
+    "keywords": [],
+    "upgrade": {
+      "effects": [
+        { "type": "deal_damage", "value": 10 },
+        { "type": "draw_cards", "value": 2 }
+      ]
+    },
+    "description": "Deal {damage} damage. Draw {amount} card(s)."
+  },
+  {
+    "id": "sword_boomerang",
+    "name": "Sword Boomerang",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "all_enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 3, "upgradedValue": 3, "hits": 3 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "deal_damage", "value": 3, "hits": 4 }] },
+    "description": "Deal {damage} damage to a random enemy {hits} times."
+  },
+  {
+    "id": "thunderclap",
+    "name": "Thunderclap",
+    "type": "attack",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "all_enemy",
+    "effects": [
+      { "type": "deal_damage", "value": 4, "upgradedValue": 7 },
+      { "type": "apply_status", "value": 1, "status": "vulnerable", "duration": 1 }
+    ],
+    "keywords": [],
+    "upgrade": {
+      "effects": [
+        { "type": "deal_damage", "value": 7 },
+        { "type": "apply_status", "value": 1, "status": "vulnerable", "duration": 1 }
+      ]
+    },
+    "description": "Deal {damage} damage to ALL enemies. Apply 1 Vulnerable to ALL enemies."
+  },
+  {
+    "id": "armaments",
+    "name": "Armaments",
+    "type": "skill",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "gain_block", "value": 5, "upgradedValue": 5 }
+    ],
+    "keywords": [],
+    "upgrade": { "description": "Gain {block} Block. Upgrade ALL cards in your hand." },
+    "description": "Gain {block} Block. Upgrade a card in your hand."
+  },
+  {
+    "id": "flex",
+    "name": "Flex",
+    "type": "skill",
+    "rarity": "common",
+    "cost": 0,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "apply_status", "value": 2, "upgradedValue": 4, "status": "strength", "duration": 1 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "apply_status", "value": 4, "status": "strength", "duration": 1 }] },
+    "description": "Gain {amount} Strength until end of turn."
+  },
+  {
+    "id": "shrug_it_off",
+    "name": "Shrug It Off",
+    "type": "skill",
+    "rarity": "common",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "gain_block", "value": 8, "upgradedValue": 11 },
+      { "type": "draw_cards", "value": 1 }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "gain_block", "value": 11 }, { "type": "draw_cards", "value": 1 }] },
+    "description": "Gain {block} Block. Draw {amount} card."
+  },
+  {
+    "id": "inflame",
+    "name": "Inflame",
+    "type": "power",
+    "rarity": "uncommon",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "apply_status", "value": 2, "upgradedValue": 3, "status": "strength" }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "apply_status", "value": 3, "status": "strength" }] },
+    "description": "Gain {amount} Strength."
+  },
+  {
+    "id": "metallicize",
+    "name": "Metallicize",
+    "type": "power",
+    "rarity": "uncommon",
+    "cost": 1,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "apply_status", "value": 3, "upgradedValue": 4, "status": "metallicize" }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "apply_status", "value": 4, "status": "metallicize" }] },
+    "description": "At the end of each turn, gain {amount} Block."
+  },
+  {
+    "id": "demon_form",
+    "name": "Demon Form",
+    "type": "power",
+    "rarity": "rare",
+    "cost": 3,
+    "costType": "normal",
+    "character": "ironclad",
+    "targets": "self",
+    "effects": [
+      { "type": "apply_status", "value": 2, "upgradedValue": 3, "status": "demon_form" }
+    ],
+    "keywords": [],
+    "upgrade": { "effects": [{ "type": "apply_status", "value": 3, "status": "demon_form" }] },
+    "description": "At the start of each turn, gain {amount} Strength."
+  }
+]

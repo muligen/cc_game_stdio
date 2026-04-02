@@ -1,0 +1,13 @@
+{
+  "cardWidth": 120,
+  "cardHeight": 170,
+  "cardHoverLift": 20,
+  "cardSelectLift": 40,
+  "animationSpeedMultiplier": 1.0,
+  "combatLogMaxEntries": 50,
+  "intentUpdateDuration": 0.5,
+  "hpBarMaxWidth": 200,
+  "fadeDuration": 0.3,
+  "slideDuration": 0.4,
+  "dissolveDuration": 0.5
+}

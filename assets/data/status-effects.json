@@ -1,0 +1,212 @@
+[
+  {
+    "id": "vulnerable",
+    "name": "Vulnerable",
+    "description": "Takes 50% more damage from attacks.",
+    "category": "debuff",
+    "durationType": "turns",
+    "stackingMode": "add_duration",
+    "defaultValue": 1,
+    "defaultDuration": 2,
+    "icon": "debuff_vulnerable"
+  },
+  {
+    "id": "weak",
+    "name": "Weak",
+    "description": "Deals 25% less damage with attacks.",
+    "category": "debuff",
+    "durationType": "turns",
+    "stackingMode": "add_duration",
+    "defaultValue": 1,
+    "defaultDuration": 2,
+    "icon": "debuff_weak"
+  },
+  {
+    "id": "strength",
+    "name": "Strength",
+    "description": "Increases attack damage by {stacks}.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 1,
+    "icon": "buff_strength"
+  },
+  {
+    "id": "dexterity",
+    "name": "Dexterity",
+    "description": "Increases Block gained by {stacks}.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 1,
+    "icon": "buff_dexterity"
+  },
+  {
+    "id": "poison",
+    "name": "Poison",
+    "description": "Loses {stacks} HP at the end of its turn. Decreases by 1 each turn.",
+    "category": "debuff",
+    "durationType": "stacks",
+    "stackingMode": "add_stacks",
+    "defaultValue": 1,
+    "triggers": [
+      {
+        "timing": "on_turn_end",
+        "effect": { "type": "take_damage", "value": -1 }
+      }
+    ],
+    "icon": "debuff_poison"
+  },
+  {
+    "id": "block",
+    "name": "Block",
+    "description": "Reduces incoming attack damage by {stacks}. Resets to 0 at the start of your turn.",
+    "category": "neutral",
+    "durationType": "turns",
+    "stackingMode": "add_stacks",
+    "defaultValue": 0,
+    "icon": "block"
+  },
+  {
+    "id": "artifact",
+    "name": "Artifact",
+    "description": "Negates the next {stacks} debuff(s) applied.",
+    "category": "buff",
+    "durationType": "stacks",
+    "stackingMode": "add_stacks",
+    "defaultValue": 1,
+    "icon": "buff_artifact"
+  },
+  {
+    "id": "metallicize",
+    "name": "Metallicize",
+    "description": "At the end of your turn, gain {stacks} Block.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 3,
+    "triggers": [
+      {
+        "timing": "on_turn_end",
+        "effect": { "type": "gain_block", "value": -1 }
+      }
+    ],
+    "icon": "buff_metallicize"
+  },
+  {
+    "id": "demon_form",
+    "name": "Demon Form",
+    "description": "At the start of your turn, gain {stacks} Strength.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 2,
+    "triggers": [
+      {
+        "timing": "on_turn_start",
+        "effect": { "type": "apply_status", "value": -1, "status": "strength" }
+      }
+    ],
+    "icon": "buff_demon_form"
+  },
+  {
+    "id": "entangled",
+    "name": "Entangled",
+    "description": "Cannot play Attack cards this turn.",
+    "category": "debuff",
+    "durationType": "turns",
+    "stackingMode": "does_not_stack",
+    "defaultValue": 1,
+    "defaultDuration": 1,
+    "icon": "debuff_entangled"
+  },
+  {
+    "id": "frail",
+    "name": "Frail",
+    "description": "Gain 25% less Block from cards.",
+    "category": "debuff",
+    "durationType": "turns",
+    "stackingMode": "add_duration",
+    "defaultValue": 1,
+    "defaultDuration": 2,
+    "icon": "debuff_frail"
+  },
+  {
+    "id": "rage",
+    "name": "Rage",
+    "description": "Whenever you play an Attack, gain {stacks} Block.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 3,
+    "triggers": [
+      {
+        "timing": "on_card_played",
+        "effect": { "type": "gain_block", "value": -1 }
+      }
+    ],
+    "icon": "buff_rage"
+  },
+  {
+    "id": "thorns",
+    "name": "Thorns",
+    "description": "When attacked, deal {stacks} damage to the attacker.",
+    "category": "buff",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 3,
+    "triggers": [
+      {
+        "timing": "on_damage_taken",
+        "effect": { "type": "deal_damage_thorns", "value": -1 }
+      }
+    ],
+    "icon": "buff_thorns"
+  },
+  {
+    "id": "wound",
+    "name": "Wound",
+    "description": "Unplayable.",
+    "category": "neutral",
+    "durationType": "combat",
+    "stackingMode": "does_not_stack",
+    "defaultValue": 1,
+    "icon": "status_wound"
+  },
+  {
+    "id": "dazed",
+    "name": "Dazed",
+    "description": "Unplayable. Exhaust at end of turn.",
+    "category": "neutral",
+    "durationType": "combat",
+    "stackingMode": "does_not_stack",
+    "defaultValue": 1,
+    "icon": "status_dazed"
+  },
+  {
+    "id": "burn",
+    "name": "Burn",
+    "description": "Unplayable. At the end of your turn, take 2 damage.",
+    "category": "neutral",
+    "durationType": "combat",
+    "stackingMode": "add_stacks",
+    "defaultValue": 1,
+    "triggers": [
+      {
+        "timing": "on_turn_end",
+        "effect": { "type": "take_damage", "value": 2 }
+      }
+    ],
+    "icon": "status_burn"
+  },
+  {
+    "id": "slimed",
+    "name": "Slimed",
+    "description": "Costs 1. Exhaust.",
+    "category": "neutral",
+    "durationType": "combat",
+    "stackingMode": "does_not_stack",
+    "defaultValue": 1,
+    "icon": "status_slimed"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "commonCardCost": 50,
+  "uncommonCardCost": 75,
+  "rareCardCost": 150,
+  "removeCost": 75,
+  "relicPrices": {
+    "common": 150,
+    "uncommon": 250,
+    "rare": 300,
+    "shop": 150
+  },
+  "shopCardCount": 7,
+  "shopRelicCount": 3
+}

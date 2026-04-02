@@ -1,0 +1,20 @@
+{
+  "baseRareChance": 0.03,
+  "pityIncrement": 0.01,
+  "pityCap": 0.40,
+  "uncommonChance": 0.37,
+  "rewardCardsOffered": 3,
+  "normalGoldBase": 15,
+  "normalGoldVariance": 5,
+  "eliteGoldBase": 30,
+  "eliteGoldVariance": 10,
+  "bossGoldBase": 60,
+  "bossGoldVariance": 20,
+  "potionDropRate": 0.40,
+  "potionDropPenalty": 0.10,
+  "commonPotionWeight": 0.65,
+  "uncommonPotionWeight": 0.25,
+  "rarePotionWeight": 0.10,
+  "shopRareBonus": 0.06,
+  "eliteRareBonus": 0.07
+}

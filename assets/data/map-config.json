@@ -1,0 +1,52 @@
+{
+  "floorsPerAct": 15,
+  "nodesPerFloorMin": 2,
+  "nodesPerFloorMax": 5,
+  "eliteMinFloor": 4,
+  "maxElitesPerAct": 3,
+  "restSiteMinPerAct": 2,
+  "restSiteMaxPerAct": 4,
+  "restHealPercent": 0.30,
+  "floorWeights": [
+    {
+      "floorStart": 0,
+      "floorEnd": 3,
+      "combatWeight": 0.60,
+      "eliteWeight": 0.00,
+      "shopWeight": 0.10,
+      "restWeight": 0.10,
+      "eventWeight": 0.20,
+      "treasureWeight": 0.00
+    },
+    {
+      "floorStart": 4,
+      "floorEnd": 7,
+      "combatWeight": 0.45,
+      "eliteWeight": 0.15,
+      "shopWeight": 0.10,
+      "restWeight": 0.10,
+      "eventWeight": 0.15,
+      "treasureWeight": 0.05
+    },
+    {
+      "floorStart": 8,
+      "floorEnd": 13,
+      "combatWeight": 0.40,
+      "eliteWeight": 0.15,
+      "shopWeight": 0.10,
+      "restWeight": 0.15,
+      "eventWeight": 0.10,
+      "treasureWeight": 0.10
+    },
+    {
+      "floorStart": 14,
+      "floorEnd": 14,
+      "combatWeight": 0.00,
+      "eliteWeight": 0.00,
+      "shopWeight": 0.00,
+      "restWeight": 1.00,
+      "eventWeight": 0.00,
+      "treasureWeight": 0.00
+    }
+  ]
+}

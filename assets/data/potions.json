@@ -1,0 +1,62 @@
+[
+  {
+    "id": "fire_potion",
+    "name": "Fire Potion",
+    "description": "Deal 20 damage to an enemy.",
+    "rarity": "common",
+    "target": "enemy",
+    "effects": [{ "type": "deal_damage", "value": 20 }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  },
+  {
+    "id": "block_potion",
+    "name": "Block Potion",
+    "description": "Gain 12 Block.",
+    "rarity": "common",
+    "target": "self",
+    "effects": [{ "type": "gain_block", "value": 12 }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  },
+  {
+    "id": "strength_potion",
+    "name": "Strength Potion",
+    "description": "Gain 2 Strength.",
+    "rarity": "uncommon",
+    "target": "self",
+    "effects": [{ "type": "apply_status", "value": 2, "status": "strength" }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  },
+  {
+    "id": "weak_potion",
+    "name": "Fear Potion",
+    "description": "Apply 3 Weak to an enemy.",
+    "rarity": "common",
+    "target": "enemy",
+    "effects": [{ "type": "apply_status", "value": 3, "status": "weak", "duration": 3 }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  },
+  {
+    "id": "energy_potion",
+    "name": "Energy Potion",
+    "description": "Gain 2 Energy.",
+    "rarity": "common",
+    "target": "self",
+    "effects": [{ "type": "gain_energy", "value": 2 }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  },
+  {
+    "id": "blessing_of_the_fairy",
+    "name": "Blessing of the Fairy",
+    "description": "Upgrade a random card in your hand.",
+    "rarity": "rare",
+    "target": "self",
+    "effects": [{ "type": "upgrade_random_card", "value": 1 }],
+    "canUseInCombat": true,
+    "canUseOutOfCombat": false
+  }
+]

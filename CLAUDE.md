@@ -5,14 +5,15 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Phaser 3 (WebGL/Canvas)
+- **Language**: TypeScript
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Vite
+- **Asset Pipeline**: Vite + Phaser loader (spritesheets, tilemaps, audio sprites)
+- **Runtime**: Browser (Chrome, Firefox, Edge — WebGL2 preferred)
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: This is a web-based card game (roguelike deckbuilder). No native engine
+> specialist agents apply — use `gameplay-programmer` and `ui-programmer` for implementation.
 
 ## Project Structure
 
@@ -20,7 +21,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Engine Version Reference
 
-@docs/engine-reference/godot/VERSION.md
+@docs/engine-reference/phaser3/VERSION.md
 
 ## Technical Preferences
 
