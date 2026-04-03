@@ -70,6 +70,7 @@ export { PotionRarity } from './potion';
 // --- Character System ---
 export type {
   CharacterData,
+  CharacterInstance,
   UnlockCondition,
 } from './character';
 
