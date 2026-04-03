@@ -128,7 +128,6 @@ const DEFAULT_NODE_LABEL = '???';
  */
 export class MapLayoutCalculator {
   private readonly screenWidth: number;
-  private readonly screenHeight: number;
   private readonly nodeRadius: number;
   private readonly verticalGap: number;
   private readonly topMargin: number;
@@ -138,7 +137,6 @@ export class MapLayoutCalculator {
    */
   constructor(config: MapLayoutConfig) {
     this.screenWidth = config.screenWidth;
-    this.screenHeight = config.screenHeight;
     this.nodeRadius = config.nodeRadius ?? 30;
     this.verticalGap = config.verticalGap ?? 120;
     this.topMargin = config.topMargin ?? 100;

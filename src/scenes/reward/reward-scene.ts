@@ -16,11 +16,12 @@
  */
 
 import Phaser from 'phaser';
+import { SCENE_KEYS } from '../../config/game-config';
 import { RewardController } from './reward-controller';
 import { RewardUILayoutCalculator } from './reward-ui-layout';
-import type { RewardUIConfig, RewardUILayout, RewardCardLayout } from './reward-ui-layout';
-import { CardType } from '../../types/card';
+import type { RewardUIConfig, RewardCardLayout } from './reward-ui-layout';
 import type { CardData } from '../../types/card';
+import { resolveCardDescription } from '../../utils/card-description';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -229,8 +230,9 @@ export class RewardScene extends Phaser.Scene {
       { fontSize: '14px', color: '#44ddff' },
     ).setOrigin(0.5);
 
-    // Card description
-    const descText = this.add.text(0, height * 0.15, cardLayout.card.description, {
+    // Card description (resolve template variables)
+    const resolvedDesc = resolveCardDescription(cardLayout.card.description, cardLayout.card.effects, false);
+    const descText = this.add.text(0, height * 0.15, resolvedDesc, {
       fontSize: '12px',
       color: '#cccccc',
       wordWrap: { width: width - 16 },
@@ -317,7 +319,8 @@ export class RewardScene extends Phaser.Scene {
   }
 
   /**
-   * Finalize the reward selection: clear hover, gray out cards, notify callback.
+   * Finalize the reward selection: clear hover, gray out cards, notify callback,
+   * then auto-transition to MapScene after a short delay.
    */
   private completeReward(): void {
     this.hoveredIndex = null;
@@ -328,9 +331,28 @@ export class RewardScene extends Phaser.Scene {
     }
 
     const result = this.buildResult();
+
+    // Update run state in Phaser registry
+    const currentGold = (this.registry.get('playerGold') as number) ?? 0;
+    this.registry.set('playerGold', currentGold + result.goldGained);
+
+    // Add card to deck if one was selected
+    if (result.addedCard) {
+      const deck = (this.registry.get('playerDeck') as { instanceId: string; cardId: string; upgraded: boolean }[]) ?? [];
+      const instanceId = `${result.addedCard.id}_${deck.length}`;
+      deck.push({ instanceId, cardId: result.addedCard.id, upgraded: false });
+      this.registry.set('playerDeck', deck);
+    }
+
+    // Notify callback (for testing)
     if (this.onComplete) {
       this.onComplete(result);
     }
+
+    // Auto-transition to MapScene after a brief delay for visual feedback
+    this.time.delayedCall(600, () => {
+      this.scene.start(SCENE_KEYS.MAP);
+    });
   }
 
   /**

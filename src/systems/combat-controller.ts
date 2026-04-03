@@ -315,7 +315,6 @@ export class CombatController {
     // 3. Spawn enemies (if provided)
     const enemyInstances: CombatEnemyInstance[] = [];
     if (enemyDataList && enemyDataList.length > 0) {
-      const aiRNG = this._rng.getStream('aiRNG');
       const combatRNG = this._rng.getStream('combatRNG');
 
       for (let i = 0; i < enemyDataList.length; i++) {
@@ -973,6 +972,21 @@ export class CombatController {
       }
       case 'apply_status': {
         this.resolveCardStatus(card, effect, target);
+        break;
+      }
+      case 'draw_cards': {
+        // Draw N cards into hand. Per GDD: Pommel Strike, Shrug It Off, etc.
+        const count = effect.value ?? 1;
+        this._deckManager.drawCard(count);
+        this._eventBus.emit('onCardsDrawn', { count });
+        break;
+      }
+      case 'deal_damage_equal_to_block': {
+        // Body Slam: deal damage equal to current player block.
+        // Reuse resolveCardDamage with a synthetic effect using block as value.
+        const blockDamage = this.state.playerBlock;
+        const synthetic: CardEffect = { ...effect, type: 'deal_damage', value: blockDamage };
+        this.resolveCardDamage(card, synthetic, target);
         break;
       }
       default: {

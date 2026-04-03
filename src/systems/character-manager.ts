@@ -22,6 +22,7 @@ import type { CardData, CombatCardInstance } from '../types/card';
 import type { StatusEffectData } from '../types/status-effect';
 import type { CombatSceneData } from '../types/combat-scene-data';
 import type { EnemyData } from '../types/enemy';
+import { IntentType } from '../types/enemy';
 import { Logger } from '../utils/logger';
 
 const LOG = new Logger('CharacterManager');
@@ -252,6 +253,25 @@ export class CharacterManager {
           { moveId: 'dark_strike', weight: 1 },
         ],
         firstMove: 'incantation',
+        moveDefinitions: {
+          incantation: {
+            id: 'incantation',
+            name: 'Incantation',
+            intent: IntentType.BUFF,
+            damage: 0,
+            effects: [{ type: 'apply_status' as const, value: 6, status: 'vulnerable', duration: 3 }],
+            target: 'player' as const,
+          },
+          dark_strike: {
+            id: 'dark_strike',
+            name: 'Dark Strike',
+            intent: IntentType.ATTACK,
+            damage: 6,
+            effects: [{ type: 'deal_damage' as const, value: 6 }],
+            target: 'player' as const,
+            hits: 1,
+          },
+        },
       },
     ];
   }

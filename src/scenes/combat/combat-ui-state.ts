@@ -280,7 +280,8 @@ export class CombatUIState {
     if (!this.subscribed) return;
 
     for (const [event, handler] of this.handlers) {
-      this.eventBus.off(event, handler);
+      (this.eventBus as { off(event: string, callback: (payload: unknown) => void): void })
+        .off(event, handler);
     }
     this.handlers.clear();
     this.subscribed = false;
@@ -332,7 +333,7 @@ export class CombatUIState {
    * @param currentHP - Starting HP.
    * @param maxHP - Maximum HP.
    */
-  addEnemy(instanceId: string, name: string, currentHP: number, maxHP: number): void {
+  addEnemy(instanceId: string, name: string, currentHP: number, maxHP: number, intent: UIIntentData | null = null): void {
     this.enemies.push({
       instanceId,
       name,
@@ -340,7 +341,7 @@ export class CombatUIState {
       maxHP,
       block: 0,
       isAlive: true,
-      intent: null,
+      intent,
     });
   }
 

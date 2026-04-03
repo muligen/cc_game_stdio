@@ -25,7 +25,6 @@
 import type { GameEventBus } from '../../systems/game-event-bus';
 import type { CombatLogLayoutConfig } from './combat-log-layout';
 import { CombatLogLayoutCalculator } from './combat-log-layout';
-import type { CombatLogEntry } from './combat-log-entry';
 import { CombatLogTracker } from './combat-log-tracker';
 
 // ---------------------------------------------------------------------------

@@ -45,7 +45,7 @@ export interface EnemyDisplayConfig {
   panelHeight?: number;
   /** Horizontal gap between enemy panels in pixels. Default: 40. */
   gap?: number;
-  /** Top margin from screen edge in pixels. Default: 80. */
+  /** Top margin from screen edge in pixels. Default: 200. */
   topMargin?: number;
   /** Y offset for the HP bar relative to panel bottom. Default: 0. */
   hpBarYOffset?: number;
@@ -174,7 +174,6 @@ export class EnemyDisplay {
   private readonly intentYOffset: number;
   private readonly blockValueYOffset: number;
   private readonly screenWidth: number;
-  private readonly _screenHeight: number;
 
   /**
    * @param config - Layout configuration. screenWidth and screenHeight are required.
@@ -186,12 +185,11 @@ export class EnemyDisplay {
     this.panelWidth = config.panelWidth ?? 160;
     this.panelHeight = config.panelHeight ?? 220;
     this.gap = config.gap ?? 40;
-    this.topMargin = config.topMargin ?? 80;
+    this.topMargin = config.topMargin ?? 200;
     this.hpBarYOffset = config.hpBarYOffset ?? 0;
     this.intentYOffset = config.intentYOffset ?? -40;
     this.blockValueYOffset = config.blockValueYOffset ?? -20;
     this.screenWidth = config.screenWidth;
-    this._screenHeight = config.screenHeight;
   }
 
   // ---------------------------------------------------------------------------

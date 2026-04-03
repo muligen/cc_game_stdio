@@ -79,7 +79,7 @@
     "character": "ironclad",
     "targets": "enemy",
     "effects": [
-      { "type": "deal_damage_equal_to_block" }
+      { "type": "deal_damage_equal_to_block", "value": 0 }
     ],
     "keywords": [],
     "upgrade": { "cost": 0 },

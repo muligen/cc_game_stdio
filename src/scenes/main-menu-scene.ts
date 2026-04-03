@@ -22,7 +22,6 @@ import { GameRegistryPlugin } from '../plugins/game-registry-plugin';
 import { CharacterManager } from '../systems/character-manager';
 import type { CharacterData } from '../types/character';
 import type { CardData } from '../types/card';
-import type { StatusEffectData } from '../types/status-effect';
 import { GameRNG } from '../utils/rng';
 import { Logger } from '../utils/logger';
 
@@ -171,6 +170,14 @@ export class MainMenuScene extends Phaser.Scene {
         `Combat payload created. Player HP: ${combatData.playerHP}/${combatData.playerMaxHP}, ` +
         `Deck: ${combatData.deck.length} cards, Enemies: ${combatData.enemies?.length ?? 0}`
       );
+
+      // Store run state in Phaser registry for cross-scene persistence
+      this.registry.set('characterId', characterId);
+      this.registry.set('playerHP', combatData.playerHP);
+      this.registry.set('playerMaxHP', combatData.playerMaxHP);
+      this.registry.set('playerGold', 0);
+      this.registry.set('playerDeck', combatData.deck.map(c => ({ ...c })));
+      this.registry.set('runSeed', combatData.seed);
 
       // Transition to CombatScene with the payload
       this.scene.start(SCENE_KEYS.COMBAT, combatData);

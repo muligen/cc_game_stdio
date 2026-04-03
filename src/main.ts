@@ -14,6 +14,9 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, GAME_FPS, PLUGIN_KEYS } from './config/game-config';
 import { BootScene } from './scenes/boot-scene';
 import { MainMenuScene } from './scenes/main-menu-scene';
+import { CombatScene } from './scenes/combat-scene';
+import { MapScene } from './scenes/map/map-scene';
+import { RewardScene } from './scenes/reward/reward-scene';
 import { GameRegistryPlugin } from './plugins/game-registry-plugin';
 import { StateManagerPlugin } from './plugins/state-manager-plugin';
 
@@ -36,7 +39,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     target: GAME_FPS,
     forceSetTimeOut: false,
   },
-  scene: [BootScene, MainMenuScene],
+  scene: [BootScene, MainMenuScene, CombatScene, MapScene, RewardScene],
   plugins: {
     global: [
       {
@@ -61,6 +64,9 @@ function createGame(): Phaser.Game {
 }
 
 // Boot the game
-createGame();
+const game = createGame();
+
+// Expose for debugging and Playwright testing
+(window as unknown as Record<string, unknown>).game = game;
 
 export { gameConfig };

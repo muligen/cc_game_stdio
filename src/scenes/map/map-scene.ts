@@ -28,13 +28,11 @@ import { GameRegistryPlugin } from '../../plugins/game-registry-plugin';
 import { CharacterManager } from '../../systems/character-manager';
 import type { CharacterData } from '../../types/character';
 import type { CardData } from '../../types/card';
-import type { StatusEffectData } from '../../types/status-effect';
 import type { CombatSceneData } from '../../types/combat-scene-data';
 import { GameRNG } from '../../utils/rng';
 import { Logger } from '../../utils/logger';
 import { MapState } from './map-state';
 import { MapLayoutCalculator, type MapNodeLayout } from './map-layout';
-import type { MapNode } from './map-node';
 
 const LOG = new Logger('MapScene');
 
@@ -136,7 +134,12 @@ export class MapScene extends Phaser.Scene {
 
     if (this.mapState.isMapComplete()) {
       LOG.info('Map complete! All nodes finished.');
-      this.callbacks?.onMapComplete();
+      // Notify callback (for testing)
+      if (this.callbacks) {
+        this.callbacks.onMapComplete();
+      }
+      // Show victory message and return to main menu
+      this.showMapCompleteMessage();
     } else {
       this.rerender();
     }
@@ -378,6 +381,9 @@ export class MapScene extends Phaser.Scene {
 
   /**
    * Handle a node click -- select the node and start combat.
+   *
+   * Transitions directly to CombatScene using run state from Phaser registry.
+   * Falls back to callback if no registry state available (for testing).
    */
   private handleNodeClick(nodeId: string): void {
     if (!this.mapState.canSelectNode(nodeId)) {
@@ -393,17 +399,26 @@ export class MapScene extends Phaser.Scene {
 
     LOG.info(`Selected node ${nodeId} (floor ${node.floor}, type ${node.type}).`);
 
-    // Create combat payload and notify via callback
+    // Create combat payload and transition
     const payload = this.createCombatPayload();
     if (payload) {
-      this.callbacks?.onStartCombat(payload);
+      // Notify via callback first (for testing)
+      if (this.callbacks) {
+        this.callbacks.onStartCombat(payload);
+      }
+      // Transition to CombatScene directly
+      this.scene.start(SCENE_KEYS.COMBAT, payload);
     } else {
       LOG.error('Failed to create combat payload. Cannot start combat.');
     }
   }
 
   /**
-   * Create a CombatSceneData payload using CharacterManager.
+   * Create a CombatSceneData payload using current run state from Phaser registry.
+   *
+   * Uses registry data (HP, deck, gold) to build a payload that reflects
+   * the player's current state (e.g., reduced HP from previous combats,
+   * new cards added from rewards).
    *
    * @returns CombatSceneData, or null if CharacterManager is unavailable.
    */
@@ -412,7 +427,77 @@ export class MapScene extends Phaser.Scene {
       return null;
     }
 
+    const characterId = (this.registry.get('characterId') as string) ?? DEFAULT_CHARACTER_ID;
     const seed = GameRNG.generateSeed();
-    return this.characterManager.createCombatPayload(DEFAULT_CHARACTER_ID, seed);
+
+    // Get base payload from CharacterManager
+    const payload = this.characterManager.createCombatPayload(characterId, seed);
+
+    // Override with current run state from registry
+    const currentHP = this.registry.get('playerHP') as number | undefined;
+    const currentDeck = this.registry.get('playerDeck') as { instanceId: string; cardId: string; upgraded: boolean }[] | undefined;
+
+    if (currentHP !== undefined) {
+      payload.playerHP = currentHP;
+    }
+
+    if (currentDeck && currentDeck.length > 0) {
+      payload.deck = currentDeck;
+
+      // CRITICAL FIX: Rebuild cardData to include ALL cards in the deck,
+      // not just starter cards. Reward scenes may have added new cards
+      // whose CardData is missing from the starter-only cardData.
+      const plugin = this.plugins.get(PLUGIN_KEYS.GAME_REGISTRY);
+      if (plugin) {
+        const registry = plugin as unknown as GameRegistryPlugin;
+        if (registry.isReady()) {
+          const allCards = registry.getAllCards();
+          const cardMap = new Map<string, CardData>(allCards.map(c => [c.id, c]));
+          const seen = new Set<string>();
+          const uniqueCardData: CardData[] = [];
+          for (const entry of currentDeck) {
+            const card = cardMap.get(entry.cardId);
+            if (card && !seen.has(card.id)) {
+              seen.add(card.id);
+              uniqueCardData.push(card);
+            }
+          }
+          payload.cardData = uniqueCardData;
+        }
+      }
+    }
+
+    return payload;
+  }
+
+  /**
+   * Show a map complete message and transition back to MainMenuScene.
+   */
+  private showMapCompleteMessage(): void {
+    const { width, height } = this.cameras.main;
+
+    // Overlay
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
+
+    // Victory text
+    const text = this.add.text(width / 2, height / 2 - 30, 'Act Complete!', {
+      fontSize: '48px',
+      color: '#44ff44',
+      fontStyle: 'bold',
+    }).setOrigin(0.5, 0.5);
+
+    const gold = (this.registry.get('playerGold') as number) ?? 0;
+    const goldText = this.add.text(width / 2, height / 2 + 30, `Gold earned: ${gold}`, {
+      fontSize: '24px',
+      color: '#ffdd44',
+    }).setOrigin(0.5, 0.5);
+
+    // Click to return to main menu
+    this.input.once('pointerdown', () => {
+      overlay.destroy();
+      text.destroy();
+      goldText.destroy();
+      this.scene.start(SCENE_KEYS.MAIN_MENU);
+    });
   }
 }

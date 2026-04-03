@@ -140,7 +140,6 @@ const EXPAND_BUTTON_HEIGHT = 24;
  */
 export class CombatLogLayoutCalculator {
   private readonly screenWidth: number;
-  private readonly screenHeight: number;
   private readonly panelWidth: number;
   private readonly maxVisibleEntries: number;
   private readonly expandedVisibleEntries: number;
@@ -154,7 +153,6 @@ export class CombatLogLayoutCalculator {
    */
   constructor(config: CombatLogLayoutConfig) {
     this.screenWidth = config.screenWidth;
-    this.screenHeight = config.screenHeight;
     this.panelWidth = config.panelWidth ?? DEFAULT_PANEL_WIDTH;
     this.maxVisibleEntries = config.maxVisibleEntries ?? DEFAULT_MAX_VISIBLE;
     this.expandedVisibleEntries = config.expandedVisibleEntries ?? DEFAULT_EXPANDED_VISIBLE;
