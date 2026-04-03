@@ -33,6 +33,7 @@ import { GameRNG } from '../../utils/rng';
 import { Logger } from '../../utils/logger';
 import { MapState } from './map-state';
 import { MapLayoutCalculator, type MapNodeLayout } from './map-layout';
+import type { MapNodeState } from './map-node';
 
 const LOG = new Logger('MapScene');
 
@@ -171,7 +172,20 @@ export class MapScene extends Phaser.Scene {
       screenHeight: this.cameras.main.height,
     });
 
-    // Step 4: Render
+    // Step 4: Restore saved map progress (if returning from combat+reward)
+    const savedNodes = this.registry.get('mapNodes') as
+      | { id: string; floor: number; type: string; state: MapNodeState }[]
+      | undefined;
+    if (savedNodes) {
+      this.mapState.restoreState(savedNodes);
+      this.registry.remove('mapNodes');
+      // Combat was won while we were away — complete the current node
+      // and unlock the next floor
+      this.mapState.completeCurrentNode();
+      LOG.info(`Restored map state: ${savedNodes.filter(n => n.state === 'completed').length} nodes completed.`);
+    }
+
+    // Step 5: Render
     this.rerender();
   }
 
@@ -402,6 +416,14 @@ export class MapScene extends Phaser.Scene {
     // Create combat payload and transition
     const payload = this.createCombatPayload();
     if (payload) {
+      // Save map state to registry before leaving (to restore after reward)
+      this.registry.set('mapNodes', this.mapState.getNodes().map(n => ({
+        id: n.id,
+        floor: n.floor,
+        type: n.type,
+        state: n.state,
+      })));
+
       // Notify via callback first (for testing)
       if (this.callbacks) {
         this.callbacks.onStartCombat(payload);

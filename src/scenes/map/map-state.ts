@@ -188,6 +188,31 @@ export class MapState {
     }
   }
 
+  /**
+   * Restore node states from saved data (e.g. Phaser registry).
+   *
+   * Used when MapScene is restarted via scene.start() after combat+reward.
+   * The map structure (node count, types) is rebuilt in create(), then
+   * this method restores which nodes were completed/available.
+   *
+   * @param nodeStates - Array of { id, state } pairs to restore.
+   */
+  restoreState(nodeStates: ReadonlyArray<{ id: string; state: MapNodeState }>): void {
+    for (const saved of nodeStates) {
+      const node = this.findNode(saved.id);
+      if (node) {
+        node.state = saved.state;
+      }
+    }
+    // Restore currentFloor from the highest completed node
+    this.currentFloor = -1;
+    for (const node of this.nodes) {
+      if (node.state === 'completed' && node.floor >= this.currentFloor) {
+        this.currentFloor = node.floor;
+      }
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Private Helpers
   // ---------------------------------------------------------------------------

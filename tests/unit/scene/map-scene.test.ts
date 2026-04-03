@@ -694,3 +694,98 @@ describe('MapState -- completeCurrentNode edge cases', () => {
     expect(state.getNodes()[1].state).toBe('available');
   });
 });
+
+// ===========================================================================
+// 21. MapState restoreState -- save/restore cycle (combat→reward→map flow)
+// ===========================================================================
+
+describe('MapState -- restoreState (combat→reward→map bug regression)', () => {
+  it('restoring a "current" node then completing it unlocks next floor', () => {
+    // Simulate the real flow:
+    // 1. Player selects node_0 (state = 'current')
+    // 2. MapScene saves to registry (node_0='current', node_1='locked', node_2='locked')
+    // 3. Combat runs and player wins
+    // 4. RewardScene transitions back to MapScene
+    // 5. MapScene.create() builds fresh MapState, restores from registry,
+    //    then calls completeCurrentNode()
+
+    // Step 1-2: select and serialize
+    const original = createDemoMapState();
+    original.selectNode('node_0');
+    const savedNodes = original.getNodes().map(n => ({
+      id: n.id,
+      state: n.state as MapNodeState,
+    }));
+
+    // Verify serialization captured the 'current' state
+    expect(savedNodes[0].state).toBe('current');
+    expect(savedNodes[1].state).toBe('locked');
+
+    // Step 5: new MapState (as create() would build)
+    const restored = createDemoMapState();
+    restored.restoreState(savedNodes);
+
+    // At this point node_0 is 'current' but combat was already won
+    // canSelectNode should be false (a node is current)
+    expect(restored.canSelectNode('node_1')).toBe(false);
+
+    // Complete the won combat
+    restored.completeCurrentNode();
+
+    // Now node_0 should be completed and node_1 should be available
+    expect(restored.getNodes()[0].state).toBe('completed');
+    expect(restored.getNodes()[1].state).toBe('available');
+    expect(restored.getNodes()[2].state).toBe('locked');
+    expect(restored.canSelectNode('node_1')).toBe(true);
+  });
+
+  it('full 3-node save/restore cycle produces correct progression', () => {
+    // Simulate 3 combats with save/restore cycles between each
+
+    // Combat 1
+    let state = createDemoMapState();
+    state.selectNode('node_0');
+    const saved1 = state.getNodes().map(n => ({ id: n.id, state: n.state as MapNodeState }));
+
+    // Restore after combat 1
+    state = createDemoMapState();
+    state.restoreState(saved1);
+    state.completeCurrentNode(); // combat was won
+
+    // Combat 2
+    state.selectNode('node_1');
+    const saved2 = state.getNodes().map(n => ({ id: n.id, state: n.state as MapNodeState }));
+
+    // Restore after combat 2
+    state = createDemoMapState();
+    state.restoreState(saved2);
+    state.completeCurrentNode(); // combat was won
+
+    // Combat 3
+    state.selectNode('node_2');
+    const saved3 = state.getNodes().map(n => ({ id: n.id, state: n.state as MapNodeState }));
+
+    // Restore after combat 3
+    state = createDemoMapState();
+    state.restoreState(saved3);
+    state.completeCurrentNode();
+
+    expect(state.isMapComplete()).toBe(true);
+  });
+
+  it('restoreState is no-op with empty array', () => {
+    const state = createDemoMapState();
+    state.restoreState([]);
+
+    expect(state.getNodes()[0].state).toBe('available');
+    expect(state.getCurrentFloor()).toBe(-1);
+  });
+
+  it('restoreState ignores unknown node IDs', () => {
+    const state = createDemoMapState();
+    state.restoreState([{ id: 'node_999', state: 'completed' }]);
+
+    // Nothing changed
+    expect(state.getNodes()[0].state).toBe('available');
+  });
+});
